@@ -1,0 +1,39 @@
+import warnings
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Read the training and test data
+train = pd.read_csv('train.csv')
+test = pd.read_csv('test.csv')
+
+# Feature Engineering: Create a new column to indicate if Cabin information is available
+train["CabinBool"] = (train["Cabin"].notnull().astype(int))
+test["CabinBool"] = (test["Cabin"].notnull().astype(int))
+
+# Drop unnecessary features (e.g., Cabin)
+train = train.drop(['Cabin'], axis=1)
+test = test.drop(['Cabin'], axis=1)
+
+# Visualization: Pie chart for survivors vs. non-survivors
+f, ax = plt.subplots(1, 2, figsize=(12, 4))
+train['Survived'].value_counts().plot.pie(explode=[0, 0.1], autopct='%1.1f%%', ax=ax[0], shadow=False)
+ax[0].set_title('Survivors (1) and the dead (0)')
+train = pd.melt(train, id_vars=['PassengerId'], var_name='variable', value_name='value')
+sns.countplot(x=None, y=None, hue=None, data=None, order=None, hue_order=None, orient=None, color=None, palette=None, saturation=0.75, dodge=True, ax=None)
+sns.countplot(data=train, x='variable', hue='value', ax=ax[1])
+
+ax[1].set_ylabel('Quantity')
+ax[1].set_title('Survivors (1) and the dead (0)')
+plt.show()
+
+# Visualization: Bar chart for survivors by sex
+f, ax = plt.subplots(1, 2, figsize=(12, 4))
+!pip install pandas matplotlib seaborn
+train.groupby('Sex')['Survived'].mean().plot.bar(ax=ax[0])
+ax[0].set_title('Survivors by sex')
+sns.countplot('Sex', hue='Survived', ax=ax[1])
+ax[1].set_ylabel('Quantity')
+ax[1].set_title('Survived (1) and deceased (0): men and women')
+plt.show()
